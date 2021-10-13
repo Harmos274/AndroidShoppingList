@@ -22,7 +22,6 @@ public class ListActivity extends AppCompatActivity {
         LinearLayout listLayout = findViewById(R.id.scrollViewLinearLayout);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View rowView = inflater.inflate(R.layout.item, null);
-
         TextView itemLabel = rowView.findViewById(R.id.itemLabel);
         TextView itemPrice = rowView.findViewById(R.id.itemPrice);
 
@@ -40,6 +39,7 @@ public class ListActivity extends AppCompatActivity {
 
         TextView activityTitle = findViewById(R.id.activityTitle);
         String activityTitleString = username + "'s list";
+
         activityTitle.setText(activityTitleString);
 
         Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);

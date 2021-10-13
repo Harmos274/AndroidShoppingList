@@ -21,6 +21,7 @@ public class DatabaseQuerier {
     static public Optional<User> getUserFromCredentials(@NonNull String username, @NonNull String password) {
         // Placeholder
         if (FieldValidator.validUsername(username) && FieldValidator.validPassword(password)) {
+            // retrieve user from db
             return Optional.of(new User(username, password));
         } else {
             return Optional.empty();
@@ -30,6 +31,7 @@ public class DatabaseQuerier {
     static public Optional<User> registerUserFromCredentials(@NonNull String username, @NonNull String password) {
         // Placeholder
         if (FieldValidator.validUsername(username) && FieldValidator.validPassword(password)) {
+            // Add user to db
             return Optional.of(new User(username, password));
         } else {
             return Optional.empty();
