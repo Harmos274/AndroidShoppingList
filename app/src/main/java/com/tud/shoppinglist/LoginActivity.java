@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,17 +26,25 @@ public class LoginActivity extends AppCompatActivity {
 
     public void goToRegister(View view) {
         Intent register = new Intent(this, RegisterActivity.class);
+        TextView usernameInput = findViewById(R.id.usernameInput);
+        TextView passwordInput = findViewById(R.id.passwordInput);
 
+        register.putExtra("USERNAME", usernameInput.getText().toString());
+        register.putExtra("PASSWORD", passwordInput.getText().toString());
         startActivity(register);
     }
 
     public void login(View view) {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
-        Optional<User> maybeUser = DatabaseQuerier.validateCredential(usernameInput.getText().toString(), passwordInput.getText().toString());
+        Optional<User> maybeUser = DatabaseQuerier.getUserFromCredentials(usernameInput.getText().toString(), passwordInput.getText().toString());
 
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
+            Intent shopList = new Intent(this, ListActivity.class);
+
+            shopList.putExtra("USERNAME", user.username);
+            startActivity(shopList);
         } else {
             Context context = getApplicationContext();
             Toast toast = Toast.makeText(context, invalidCredentialMessage, Toast.LENGTH_SHORT);
