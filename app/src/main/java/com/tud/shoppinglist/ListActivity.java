@@ -20,12 +20,12 @@ public class ListActivity extends AppCompatActivity {
 
     public void onAddField(View v) {
         LayoutInflater inflater=(LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        final View rowView=inflater.inflate(R.layout.field, null);
+        final View rowView = inflater.inflate(R.layout.field, null);
         // Add the new row before the add field button.
         parentLinearLayout.addView(rowView, parentLinearLayout.getChildCount() - 1);
     }
 
     public void onDelete(View v) {
-        parentLinearLayout.removeView((View) v.getParent());
+        parentLinearLayout.removeView((View) v.getParent().getParent().getParent());
     }
 }

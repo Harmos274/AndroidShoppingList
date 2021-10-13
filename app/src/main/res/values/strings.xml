@@ -5,6 +5,10 @@
     <string name="usernameLabel">Username</string>
     <string name="passwordLabel">Password</string>
     <string name="goBackButton">Back</string>
+    <string name="loginTitle">Login</string>
+    <string name="applogoDescription">shoppingBasket</string>
+    <string name="registerTitle">Register</string>
+    <string name="listTitle">List</string>
 
     <string-array name="types">
         <item>Mobile</item>
