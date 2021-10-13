@@ -4,4 +4,5 @@
     <string name="registerButtonLabel">Register</string>
     <string name="usernameLabel">Username</string>
     <string name="passwordLabel">Password</string>
+    <string name="goBackButton">Back</string>
 </resources>
