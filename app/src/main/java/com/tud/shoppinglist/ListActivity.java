@@ -2,22 +2,30 @@ package com.tud.shoppinglist;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 
 public class ListActivity extends AppCompatActivity {
+    private LinearLayout parentLinearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Intent intent = this.getIntent();
-        String username = intent.getStringExtra("USERNAME");
         setContentView(R.layout.activity_list);
+        this.parentLinearLayout = findViewById(R.id.parent_linear_layout);
+    }
 
-        TextView greetingDisplay = findViewById(R.id.greetingsLabel);
+    public void onAddField(View v) {
+        LayoutInflater inflater=(LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View rowView=inflater.inflate(R.layout.field, null);
+        // Add the new row before the add field button.
+        parentLinearLayout.addView(rowView, parentLinearLayout.getChildCount() - 1);
+    }
 
-        greetingDisplay.setText(username);
+    public void onDelete(View v) {
+        parentLinearLayout.removeView((View) v.getParent());
     }
 }

@@ -5,4 +5,10 @@
     <string name="usernameLabel">Username</string>
     <string name="passwordLabel">Password</string>
     <string name="goBackButton">Back</string>
+
+    <string-array name="types">
+        <item>Mobile</item>
+        <item>Office</item>
+        <item>Home</item>
+    </string-array>
 </resources>
