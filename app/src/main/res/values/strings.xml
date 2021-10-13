@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ShoppingList</string>
+    <string name="loginButtonLabel">Login</string>
+    <string name="registerButtonLabel">Register</string>
+    <string name="usernameLabel">Username</string>
+    <string name="passwordLabel">Password</string>
+</resources>
