@@ -9,10 +9,4 @@
     <string name="applogoDescription">shoppingBasket</string>
     <string name="registerTitle">Register</string>
     <string name="listTitle">List</string>
-
-    <string-array name="types">
-        <item>Mobile</item>
-        <item>Office</item>
-        <item>Home</item>
-    </string-array>
 </resources>

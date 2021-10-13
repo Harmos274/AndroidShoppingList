@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
-        <activity android:name=".ListActivity"></activity>
+        <activity
+            android:name=".ListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|uiMode" />
         <activity android:name=".RegisterActivity" />
         <activity
             android:name=".LoginActivity"
