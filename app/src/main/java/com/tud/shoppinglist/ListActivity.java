@@ -3,12 +3,14 @@ package com.tud.shoppinglist;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,17 +21,14 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.google.android.material.badge.BadgeDrawable;
 import com.tud.database.DatabaseQuerier;
 import com.tud.database.models.Item;
 
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class ListActivity extends AppCompatActivity {
@@ -43,15 +42,9 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String username = intent.getStringExtra("USERNAME");
         setContentView(R.layout.activity_list);
-
         setTitle(username.toUpperCase() + "'S BASKET");
-//        TextView activityTitle = findViewById(R.id.activityTitle);
-//        String activityTitleString = username + "'s list";
-//
-//        activityTitle.setText(activityTitleString);
 
         this.shoppingListView = findViewById(R.id.shoppingList);
-
         Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);
 
         items.ifPresent(value -> this.items = new ArrayList<>(Arrays.asList(value)));
@@ -61,10 +54,11 @@ public class ListActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search, menu);
-
-        MenuItem menuItem = menu.findItem(R.id.searchView);
-        SearchView searchView = (SearchView) menuItem.getActionView();
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search, menu);
+        inflater.inflate(R.menu.option_menu, menu);
+        MenuItem searchMenu = menu.findItem(R.id.searchView);
+        SearchView searchView = (SearchView) searchMenu.getActionView();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -85,7 +79,10 @@ public class ListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.searchView) {
+        if (id == R.id.optionMenu) {
+            this.finish();
+            return true;
+        } else if (id == R.id.searchView) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -94,29 +91,49 @@ public class ListActivity extends AppCompatActivity {
 
     public void addItem(View v) {
         // Add on DB
-
         this.items.add(new Item(ThreadLocalRandom.current().nextInt(0, 10000 + 1), "toto", 2));
         this.customAdapter.notifyDataSetChanged();
     }
 
     public void deleteItem(View view) {
         // Delete on DB
-        TextView itemId = ((View)view.getParent()).findViewById(R.id.itemId);
 
-        Log.d("ITEM ID", itemId.getText().toString());
+        // Need to go to the button's parent to get the hidden id TextView
+        TextView itemId = ((View) view.getParent()).findViewById(R.id.itemId);
+
         this.items.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
+        // Need to remove the item from the filtered list too notify user of the deletion
+        this.customAdapter.filteredItems.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
         this.customAdapter.notifyDataSetChanged();
     }
 
+    public void goToCheckout(View view) {
+        // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String totalBasket = "Total basket: " + this.items.stream().map(Item::getPrice).mapToDouble(i -> i).sum() + "€";
+// 2. Chain together various setter methods to set the dialog characteristics
+        builder.setMessage(totalBasket)
+                .setTitle("Go to checkout ?")
+                .setPositiveButton("Go to checkout", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Intent checkout = new Intent(ListActivity.this, CheckoutActivity.class);
+                        // Empty list
+                        startActivity(checkout);
+                    }
+                });
+
+        // 3. Get the <code><a href="/reference/android/app/AlertDialog.html">AlertDialog</a></code> from <code><a href="/reference/android/app/AlertDialog.Builder.html#create()">create()</a></code>
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     public class CustomAdapter extends BaseAdapter implements Filterable {
-        private List<Item> items;
+        private final List<Item> items;
         private List<Item> filteredItems;
-        private Context context;
 
         public CustomAdapter(List<Item> items, Context context) {
             this.items = items;
             this.filteredItems = items;
-            this.context = context;
         }
 
         @Override
@@ -144,12 +161,6 @@ public class ListActivity extends AppCompatActivity {
             names.setText(this.filteredItems.get(position).getName());
             price.setText(String.valueOf(this.filteredItems.get(position).getPrice()));
             id.setText(String.valueOf(this.filteredItems.get(position).getId()));
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    startActivity(new Intent(MainActivity.this, ItemsPreviewActivity.class).putExtra("items", itemsModelListFiltered.get(position)));
-//                }
-//            });
             return view;
         }
 
@@ -186,5 +197,4 @@ public class ListActivity extends AppCompatActivity {
             };
         }
     }
-
 }
