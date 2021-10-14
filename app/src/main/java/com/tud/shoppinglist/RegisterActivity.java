@@ -48,7 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
             Context context = getApplicationContext();
-            Toast toast = Toast.makeText(context, user.username + " has been registered.", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(context, user.getUsername() + " has been registered.", Toast.LENGTH_SHORT);
 
             toast.show();
             this.finish();

@@ -17,7 +17,6 @@ import java.util.Optional;
 
 
 public class ListActivity extends AppCompatActivity {
-
     private void addItemToShopList(Item item) {
         LinearLayout listLayout = findViewById(R.id.scrollViewLinearLayout);
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -25,8 +24,8 @@ public class ListActivity extends AppCompatActivity {
         TextView itemLabel = rowView.findViewById(R.id.itemLabel);
         TextView itemPrice = rowView.findViewById(R.id.itemPrice);
 
-        itemLabel.setText(item.name);
-        itemPrice.setText(String.valueOf(item.price));
+        itemLabel.setText(item.getName());
+        itemPrice.setText(String.valueOf(item.getPrice()));
         listLayout.addView(rowView, listLayout.getChildCount() - 1);
     }
 

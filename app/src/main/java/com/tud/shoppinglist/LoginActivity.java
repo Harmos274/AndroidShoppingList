@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             User user = maybeUser.get();
             Intent shopList = new Intent(this, ListActivity.class);
 
-            shopList.putExtra("USERNAME", user.username);
+            shopList.putExtra("USERNAME", user.getUsername());
             startActivity(shopList);
         } else {
             Context context = getApplicationContext();
