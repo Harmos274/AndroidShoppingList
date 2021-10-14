@@ -41,7 +41,7 @@ public class DatabaseQuerier {
     static public Optional<Item[]> getShoplistItemsFromUserId(int user_id) {
         // Placeholder
         if (user_id != 0) {
-            return Optional.of(new Item[]{new Item("Tomatoes", 3.5)});
+            return Optional.of(new Item[]{new Item(1, "Tomatoes", 3.5)});
         } else {
             return Optional.empty();
         }

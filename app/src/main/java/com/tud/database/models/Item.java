@@ -1,11 +1,13 @@
 package com.tud.database.models;
 
 public class Item {
-    public Item(String name, double price) {
+    public Item(int id, String name, double price) {
         this.name = name;
         this.price = price;
+        this.id = id;
     }
 
+    private int id;
     private String name;
     private double price;
 
@@ -23,5 +25,9 @@ public class Item {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public int getId() {
+        return id;
     }
 }
