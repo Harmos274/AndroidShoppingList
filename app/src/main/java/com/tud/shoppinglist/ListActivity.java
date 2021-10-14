@@ -104,10 +104,7 @@ public class ListActivity extends AppCompatActivity {
         TextView itemId = ((View)view.getParent()).findViewById(R.id.itemId);
 
         Log.d("ITEM ID", itemId.getText().toString());
-        this.items.removeIf(item -> {
-            assert itemId != null;
-            return item.getId() == Integer.parseInt(itemId.getText().toString());
-        });
+        this.items.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
         this.customAdapter.notifyDataSetChanged();
     }
 
