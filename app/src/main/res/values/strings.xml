@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ShoppingList</string>
+    <string name="app_name">Shopping List</string>
     <string name="loginButtonLabel">Login</string>
     <string name="registerButtonLabel">Register</string>
     <string name="usernameLabel">Username</string>
@@ -9,4 +9,12 @@
     <string name="applogoDescription">shoppingBasket</string>
     <string name="registerTitle">Register</string>
     <string name="listTitle">List</string>
+    <string name="checkoutTitle">Checkout</string>
+    <string name="dialogProductNameInput">Product Name</string>
+    <string name="dialogPriceInput">Price</string>
+    <string name="addProductButton">ADD</string>
+    <string name="checkoutBascketButton">CHECKOUT</string>
+    <string name="payButtonLabel">PAY</string>
+    <string name="totalBasketLabel">Total Basket</string>
+    <string name="itemNumberLabel">Number of items</string>
 </resources>

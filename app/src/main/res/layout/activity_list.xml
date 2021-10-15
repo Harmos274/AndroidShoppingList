@@ -26,10 +26,10 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:text="ADD"
+            android:text="@string/addProductButton"
             android:onClick="addItem"
             android:gravity="center"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/checkoutButton"
@@ -39,9 +39,9 @@
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:onClick="goToCheckout"
-            android:text="CHECKOUT"
+            android:text="@string/checkoutBascketButton"
             android:gravity="center"
-            android:textSize="15dp" />
+            android:textSize="15sp" />
     </LinearLayout>
 
 

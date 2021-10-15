@@ -8,7 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,16 +20,15 @@ import android.widget.Filterable;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tud.database.DatabaseQuerier;
 import com.tud.database.models.Item;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class ListActivity extends AppCompatActivity {
     ListView shoppingListView;
@@ -42,7 +41,7 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String username = intent.getStringExtra("USERNAME");
         setContentView(R.layout.activity_list);
-        setTitle(username.toUpperCase() + "'S BASKET");
+        setTitle(username.toUpperCase() + "'s basket");
 
         this.shoppingListView = findViewById(R.id.shoppingList);
         Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);
@@ -88,16 +87,42 @@ public class ListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     public void addItem(View v) {
-        // Add on DB
-        this.items.add(new Item(ThreadLocalRandom.current().nextInt(0, 10000 + 1), "toto", 2));
-        this.customAdapter.notifyDataSetChanged();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+
+        builder.setView(inflater.inflate(R.layout.dialog_add_item, null))
+                .setTitle("Add item")
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        TextView itemNameView = ((AlertDialog) dialog).findViewById(R.id.dialogItemName);
+                        TextView itemPriceView = ((AlertDialog) dialog).findViewById(R.id.dialogItemPrice);
+                        String itemPriceString = itemPriceView.getText().toString();
+                        String itemName = itemNameView.getText().toString().trim();
+
+                        if (itemPriceString.isEmpty() || itemName.isEmpty()) {
+                            Context context = getApplicationContext();
+                            Toast toast = Toast.makeText(context, "Invalid name or price.", Toast.LENGTH_SHORT);
+
+                            toast.show();
+                        } else {
+                            double itemPrice = Double.parseDouble(itemPriceView.getText().toString());
+                            Optional<Item> maybe_item = DatabaseQuerier.createNewItem(itemName, itemPrice);
+                            // Add on DB
+
+                            if (maybe_item.isPresent()) {
+                                ListActivity.this.items.add(maybe_item.get());
+                                ListActivity.this.customAdapter.notifyDataSetChanged();
+                            }
+                        }
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     public void deleteItem(View view) {
         // Delete on DB
-
         // Need to go to the button's parent to get the hidden id TextView
         TextView itemId = ((View) view.getParent()).findViewById(R.id.itemId);
 
@@ -108,23 +133,32 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void goToCheckout(View view) {
-        // 1. Instantiate an <code><a href="/reference/android/app/AlertDialog.Builder.html">AlertDialog.Builder</a></code> with its constructor
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        String totalBasket = "Total basket: " + this.items.stream().map(Item::getPrice).mapToDouble(i -> i).sum() + "€";
-// 2. Chain together various setter methods to set the dialog characteristics
-        builder.setMessage(totalBasket)
-                .setTitle("Go to checkout ?")
-                .setPositiveButton("Go to checkout", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent checkout = new Intent(ListActivity.this, CheckoutActivity.class);
-                        // Empty list
-                        startActivity(checkout);
-                    }
-                });
+        double totalBasket = this.items.stream().map(Item::getPrice).mapToDouble(i -> i).sum();
 
-        // 3. Get the <code><a href="/reference/android/app/AlertDialog.html">AlertDialog</a></code> from <code><a href="/reference/android/app/AlertDialog.Builder.html#create()">create()</a></code>
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        if (totalBasket > 0) {
+            String totalBasketMessage = "Total basket: " + totalBasket + "€";
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setMessage(totalBasketMessage)
+                    .setTitle("Go to checkout ?")
+                    .setPositiveButton("Go to checkout", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Intent checkout = new Intent(ListActivity.this, CheckoutActivity.class);
+
+                            checkout.putExtra("TOTAL_BASKET", totalBasket);
+                            checkout.putExtra("LIST_LENGTH", (long) ListActivity.this.items.size());
+                            // Empty list
+                            startActivity(checkout);
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            Context context = getApplicationContext();
+            Toast toast = Toast.makeText(context, "Empty basket.", Toast.LENGTH_SHORT);
+
+            toast.show();
+        }
     }
 
     public class CustomAdapter extends BaseAdapter implements Filterable {

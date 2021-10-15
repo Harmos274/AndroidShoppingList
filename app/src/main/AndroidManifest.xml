@@ -4,12 +4,14 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_shopping_basket"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_shopping_basket"
         android:supportsRtl="true"
         android:theme="@style/Theme.ShoppingList">
-        <activity android:name=".CheckoutActivity"></activity>
+        <activity
+            android:name=".CheckoutActivity"
+            android:label="@string/checkoutTitle" />
         <activity
             android:name=".ListActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|uiMode"
@@ -20,7 +22,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:label="@string/loginTitle">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -6,6 +6,7 @@ import com.tud.database.models.Item;
 import com.tud.database.models.User;
 
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 class FieldValidator {
     static public boolean validUsername(String username) {
@@ -45,5 +46,9 @@ public class DatabaseQuerier {
         } else {
             return Optional.empty();
         }
+    }
+
+    static public Optional<Item> createNewItem(String name, double price) {
+        return Optional.of(new Item(ThreadLocalRandom.current().nextInt(0, 10000 + 1), name, price));
     }
 }
