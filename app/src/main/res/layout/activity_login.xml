@@ -35,19 +35,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.885" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/usernameInput"
         android:layout_width="242dp"
         android:layout_height="50dp"
         android:hint="@string/usernameLabel"
+        android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.525" />
+        app:layout_constraintVertical_bias="0.525"
+        android:autofillHints="@string/usernameLabel"
+        android:inputType="textPersonName" />
 
-    <com.google.android.material.textfield.TextInputEditText
+    <EditText
         android:id="@+id/passwordInput"
         android:layout_width="242dp"
         android:layout_height="50dp"
@@ -58,7 +61,8 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.653" />
+        app:layout_constraintVertical_bias="0.653"
+        android:autofillHints="@string/passwordLabel" />
 
     <ImageView
         android:id="@+id/appLogo"

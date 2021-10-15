@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp">
 
     <ImageButton
         android:id="@+id/itemDelete"
-        android:layout_width="57dp"
-        android:layout_height="51dp"
+        android:layout_width="56dp"
+        android:layout_height="57dp"
         android:layout_weight="1"
-        android:background="@android:drawable/ic_delete"
+        android:background="?android:selectableItemBackground"
         android:onClick="deleteItem"
+        android:src="@drawable/ic_trash"
         card_view:layout_constraintBottom_toBottomOf="parent"
         card_view:layout_constraintEnd_toEndOf="parent"
-        card_view:layout_constraintHorizontal_bias="0.895"
+        card_view:layout_constraintHorizontal_bias="0.954"
         card_view:layout_constraintStart_toStartOf="parent"
         card_view:layout_constraintTop_toTopOf="parent" />
 
@@ -40,8 +40,7 @@
         card_view:layout_constraintEnd_toEndOf="parent"
         card_view:layout_constraintHorizontal_bias="0.047"
         card_view:layout_constraintStart_toStartOf="parent"
-        card_view:layout_constraintTop_toTopOf="parent"
-        card_view:layout_constraintVertical_bias="0.499" />
+        card_view:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/itemPrice"
@@ -50,8 +49,9 @@
         android:textSize="16sp"
         card_view:layout_constraintBottom_toBottomOf="parent"
         card_view:layout_constraintEnd_toEndOf="parent"
+        card_view:layout_constraintEnd_toStartOf="@+id/itemDelete"
+        card_view:layout_constraintHorizontal_bias="0.74"
         card_view:layout_constraintStart_toStartOf="parent"
-        card_view:layout_constraintTop_toTopOf="parent"
-        card_view:layout_constraintVertical_bias="0.499" />
+        card_view:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
