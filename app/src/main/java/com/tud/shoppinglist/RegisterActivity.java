@@ -23,8 +23,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         Intent intent = getIntent();
-        String username = intent.getStringExtra("USERNAME");
-        String password = intent.getStringExtra("PASSWORD");
+        String username = intent.getStringExtra(LoginActivity.USERNAME);
+        String password = intent.getStringExtra(LoginActivity.PASSWORD);
         setContentView(R.layout.activity_register);
 
         TextView usernameInput = findViewById(R.id.usernameInput);
@@ -43,7 +43,8 @@ public class RegisterActivity extends AppCompatActivity {
     public void register(View view) {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
-        Optional<User> maybeUser = DatabaseQuerier.registerUserFromCredentials(usernameInput.getText().toString(), passwordInput.getText().toString());
+        Optional<User> maybeUser = DatabaseQuerier.registerUserFromCredentials(usernameInput.getText().toString(),
+            passwordInput.getText().toString());
 
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();

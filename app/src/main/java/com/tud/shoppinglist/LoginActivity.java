@@ -15,8 +15,10 @@ import com.tud.database.models.User;
 import java.util.Optional;
 
 public class LoginActivity extends AppCompatActivity {
-
     final private static String invalidCredentialMessage = "Invalid username or password.";
+
+    public static String USERNAME = "USERNAME";
+    public static String PASSWORD = "PASSWORD";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +31,22 @@ public class LoginActivity extends AppCompatActivity {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
 
-        register.putExtra("USERNAME", usernameInput.getText().toString());
-        register.putExtra("PASSWORD", passwordInput.getText().toString());
+        register.putExtra(USERNAME, usernameInput.getText().toString());
+        register.putExtra(PASSWORD, passwordInput.getText().toString());
         startActivity(register);
     }
 
     public void login(View view) {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
-        Optional<User> maybeUser = DatabaseQuerier.getUserFromCredentials(usernameInput.getText().toString(), passwordInput.getText().toString());
+        Optional<User> maybeUser = DatabaseQuerier.getUserFromCredentials(usernameInput.getText().toString(),
+            passwordInput.getText().toString());
 
         if (maybeUser.isPresent()) {
             User user = maybeUser.get();
             Intent shopList = new Intent(this, ListActivity.class);
 
-            shopList.putExtra("USERNAME", user.getUsername());
+            shopList.putExtra(USERNAME, user.getUsername());
             startActivity(shopList);
         } else {
             Context context = getApplicationContext();

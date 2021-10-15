@@ -1,5 +1,7 @@
 package com.tud.shoppinglist;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,14 +34,18 @@ import java.util.Optional;
 
 public class ListActivity extends AppCompatActivity {
     ListView shoppingListView;
-    CustomAdapter customAdapter;
+    ItemListAdapter itemListAdapter;
     List<Item> items = new ArrayList<>();
+
+    public static int CLEAR_LIST = 123;
+    public static String TOTAL_BASKET = "TOTAL_BASKET";
+    public static String LIST_LENGTH = "LIST_LENGTH";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
-        String username = intent.getStringExtra("USERNAME");
+        String username = intent.getStringExtra(LoginActivity.USERNAME);
         setContentView(R.layout.activity_list);
         setTitle(username.toUpperCase() + "'s basket");
 
@@ -47,9 +53,19 @@ public class ListActivity extends AppCompatActivity {
         Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);
 
         items.ifPresent(value -> this.items = new ArrayList<>(Arrays.asList(value)));
-        this.customAdapter = new CustomAdapter(this.items, this);
-        this.shoppingListView.setAdapter(this.customAdapter);
+        this.itemListAdapter = new ItemListAdapter(this.items);
+        this.shoppingListView.setAdapter(this.itemListAdapter);
     }
+
+    ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == CLEAR_LIST) {
+                // Clear list in DB
+                ListActivity.this.items.clear();
+                ListActivity.this.itemListAdapter.notifyDataSetChanged();
+            }
+        });
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -67,7 +83,7 @@ public class ListActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                customAdapter.getFilter().filter(newText);
+                itemListAdapter.getFilter().filter(newText);
                 return true;
             }
         });
@@ -88,37 +104,34 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void addItem(View v) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
+        AlertDialog addItemDialog = new AlertDialog.Builder(this)
+            .setView(inflater.inflate(R.layout.dialog_add_item, null))
+            .setTitle("Add item")
+            .setPositiveButton("Add", (dialog, id) -> {
+                TextView itemNameView = ((AlertDialog) dialog).findViewById(R.id.dialogItemName);
+                TextView itemPriceView = ((AlertDialog) dialog).findViewById(R.id.dialogItemPrice);
+                String itemPriceString = itemPriceView.getText().toString();
+                String itemName = itemNameView.getText().toString().trim();
 
-        builder.setView(inflater.inflate(R.layout.dialog_add_item, null))
-                .setTitle("Add item")
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        TextView itemNameView = ((AlertDialog) dialog).findViewById(R.id.dialogItemName);
-                        TextView itemPriceView = ((AlertDialog) dialog).findViewById(R.id.dialogItemPrice);
-                        String itemPriceString = itemPriceView.getText().toString();
-                        String itemName = itemNameView.getText().toString().trim();
+                if (itemPriceString.isEmpty() || itemName.isEmpty()) {
+                    Context context = getApplicationContext();
+                    Toast toast = Toast.makeText(context, "Invalid name or price.", Toast.LENGTH_SHORT);
 
-                        if (itemPriceString.isEmpty() || itemName.isEmpty()) {
-                            Context context = getApplicationContext();
-                            Toast toast = Toast.makeText(context, "Invalid name or price.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    double itemPrice = Double.parseDouble(itemPriceView.getText().toString());
+                    Optional<Item> maybe_item = DatabaseQuerier.createNewItem(itemName, itemPrice);
+                    // Add on DB
 
-                            toast.show();
-                        } else {
-                            double itemPrice = Double.parseDouble(itemPriceView.getText().toString());
-                            Optional<Item> maybe_item = DatabaseQuerier.createNewItem(itemName, itemPrice);
-                            // Add on DB
-
-                            if (maybe_item.isPresent()) {
-                                ListActivity.this.items.add(maybe_item.get());
-                                ListActivity.this.customAdapter.notifyDataSetChanged();
-                            }
-                        }
+                    if (maybe_item.isPresent()) {
+                        ListActivity.this.items.add(maybe_item.get());
+                        ListActivity.this.itemListAdapter.notifyDataSetChanged();
                     }
-                });
-        AlertDialog dialog = builder.create();
-        dialog.show();
+                }
+            }).create();
+
+        addItemDialog.show();
     }
 
     public void deleteItem(View view) {
@@ -128,8 +141,8 @@ public class ListActivity extends AppCompatActivity {
 
         this.items.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
         // Need to remove the item from the filtered list too notify user of the deletion
-        this.customAdapter.filteredItems.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
-        this.customAdapter.notifyDataSetChanged();
+        this.itemListAdapter.filteredItems.removeIf(item -> item.getId() == Integer.parseInt(itemId.getText().toString()));
+        this.itemListAdapter.notifyDataSetChanged();
     }
 
     public void goToCheckout(View view) {
@@ -137,22 +150,18 @@ public class ListActivity extends AppCompatActivity {
 
         if (totalBasket > 0) {
             String totalBasketMessage = "Total basket: " + totalBasket + "€";
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            AlertDialog basketDialog = new AlertDialog.Builder(this)
+                .setMessage(totalBasketMessage)
+                .setTitle("Go to checkout ?")
+                .setPositiveButton("Go to checkout", (dialog, id) -> {
+                    Intent checkout = new Intent(ListActivity.this, CheckoutActivity.class);
 
-            builder.setMessage(totalBasketMessage)
-                    .setTitle("Go to checkout ?")
-                    .setPositiveButton("Go to checkout", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent checkout = new Intent(ListActivity.this, CheckoutActivity.class);
+                    checkout.putExtra(TOTAL_BASKET, totalBasket);
+                    checkout.putExtra(LIST_LENGTH, (long) ListActivity.this.items.size());
+                    activityResultLaunch.launch(checkout);
+                }).create();
 
-                            checkout.putExtra("TOTAL_BASKET", totalBasket);
-                            checkout.putExtra("LIST_LENGTH", (long) ListActivity.this.items.size());
-                            // Empty list
-                            startActivity(checkout);
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
+            basketDialog.show();
         } else {
             Context context = getApplicationContext();
             Toast toast = Toast.makeText(context, "Empty basket.", Toast.LENGTH_SHORT);
@@ -161,11 +170,11 @@ public class ListActivity extends AppCompatActivity {
         }
     }
 
-    public class CustomAdapter extends BaseAdapter implements Filterable {
+    public class ItemListAdapter extends BaseAdapter implements Filterable {
         private final List<Item> items;
         private List<Item> filteredItems;
 
-        public CustomAdapter(List<Item> items, Context context) {
+        public ItemListAdapter(List<Item> items) {
             this.items = items;
             this.filteredItems = items;
         }

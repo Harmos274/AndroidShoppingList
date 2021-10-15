@@ -19,17 +19,16 @@ public class CheckoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checkout);
 
-        Intent intent = getIntent();
-        double totalBasket = intent.getDoubleExtra("TOTAL_BASKET", 0);
-        long itemNumber = intent.getLongExtra("LIST_LENGTH", 0);
-
         TextView itemNumberTextView = findViewById(R.id.itemNumberDisplay);
         TextView totalBasketTextView = findViewById(R.id.totalBasketDisplay);
-        itemNumberTextView.setText(String.valueOf(itemNumber));
-        totalBasketTextView.setText(String.format("%s €", totalBasket));
-
         EditText creditCardExpirationMonth = findViewById(R.id.cardDateEditText);
         EditText creditCardNumber = findViewById(R.id.cardNumberEditText);
+        Intent intent = getIntent();
+        double totalBasket = intent.getDoubleExtra(ListActivity.TOTAL_BASKET, 0);
+        long itemNumber = intent.getLongExtra(ListActivity.LIST_LENGTH, 0);
+
+        itemNumberTextView.setText(String.valueOf(itemNumber));
+        totalBasketTextView.setText(String.format("%s €", totalBasket));
         creditCardNumber.addTextChangedListener(new EditTextSeparatorFormatWatcher('-', 5));
         creditCardExpirationMonth.addTextChangedListener(new EditTextSeparatorFormatWatcher('/', 3));
     }
@@ -45,6 +44,7 @@ public class CheckoutActivity extends AppCompatActivity {
                 && creditCardCVC.length() == 3
                 && creditCardNumber.length() == 21) {
             Toast.makeText(context, "Payment validated.", Toast.LENGTH_SHORT).show();
+            setResult(ListActivity.CLEAR_LIST);
             this.finish();
         } else {
             Toast.makeText(context, "Invalid credit card information.", Toast.LENGTH_SHORT).show();
