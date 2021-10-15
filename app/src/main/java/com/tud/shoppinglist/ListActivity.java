@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,7 +46,7 @@ public class ListActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String username = intent.getStringExtra(LoginActivity.USERNAME);
         setContentView(R.layout.activity_list);
-        setTitle(username.toUpperCase() + "'s basket");
+        setTitle(username + "'s basket");
 
         this.shoppingListView = findViewById(R.id.shoppingList);
         Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);

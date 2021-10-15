@@ -39,20 +39,20 @@ public class LoginActivity extends AppCompatActivity {
     public void login(View view) {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
-        Optional<User> maybeUser = DatabaseQuerier.getUserFromCredentials(usernameInput.getText().toString(),
-            passwordInput.getText().toString());
 
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            Intent shopList = new Intent(this, ListActivity.class);
+        DatabaseQuerier.getUserFromCredentials(usernameInput.getText().toString(),
+            passwordInput.getText().toString(),
+            user -> {
+                Intent shopList = new Intent(this, ListActivity.class);
 
-            shopList.putExtra(USERNAME, user.getUsername());
-            startActivity(shopList);
-        } else {
-            Context context = getApplicationContext();
-            Toast toast = Toast.makeText(context, invalidCredentialMessage, Toast.LENGTH_SHORT);
+                shopList.putExtra(USERNAME, user.getUsername());
+                startActivity(shopList);
+            },
+            () -> {
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, invalidCredentialMessage, Toast.LENGTH_SHORT);
 
-            toast.show();
-        }
+                toast.show();
+            });
     }
 }

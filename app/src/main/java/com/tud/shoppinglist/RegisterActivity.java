@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.tud.database.DatabaseQuerier;
 import com.tud.database.models.User;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -43,21 +44,20 @@ public class RegisterActivity extends AppCompatActivity {
     public void register(View view) {
         TextView usernameInput = findViewById(R.id.usernameInput);
         TextView passwordInput = findViewById(R.id.passwordInput);
-        Optional<User> maybeUser = DatabaseQuerier.registerUserFromCredentials(usernameInput.getText().toString(),
-            passwordInput.getText().toString());
 
-        if (maybeUser.isPresent()) {
-            User user = maybeUser.get();
-            Context context = getApplicationContext();
-            Toast toast = Toast.makeText(context, user.getUsername() + " has been registered.", Toast.LENGTH_SHORT);
+        DatabaseQuerier.registerUserFromCredentials(usernameInput.getText().toString(),
+            passwordInput.getText().toString(),
+            user -> {
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, user.getUsername() + " has been registered.", Toast.LENGTH_SHORT);
 
-            toast.show();
-            this.finish();
-        } else {
-            Context context = getApplicationContext();
-            Toast toast = Toast.makeText(context, invalidRegisterMessage, Toast.LENGTH_SHORT);
+                toast.show();
+                this.finish();
+            }, () -> {
+                Context context = getApplicationContext();
+                Toast toast = Toast.makeText(context, invalidRegisterMessage, Toast.LENGTH_SHORT);
 
-            toast.show();
-        }
+                toast.show();
+            });
     }
 }

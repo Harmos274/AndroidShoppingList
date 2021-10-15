@@ -2,6 +2,10 @@ package com.tud.database;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 import com.tud.database.models.Item;
 import com.tud.database.models.User;
 
@@ -19,23 +23,41 @@ class FieldValidator {
 }
 
 public class DatabaseQuerier {
-    static public Optional<User> getUserFromCredentials(@NonNull String username, @NonNull String password) {
+    public interface SuccessCallback<T> {
+        void call(T success);
+    }
+
+    public interface FailureCallback {
+        void call();
+    }
+
+    private static final String DOMAIN = "@shoplist.com";
+
+    private static final FirebaseAuth authDb = FirebaseAuth.getInstance();
+
+    static public void getUserFromCredentials(@NonNull String username, @NonNull String password,
+                                              SuccessCallback<User> onSuccess,
+                                              FailureCallback onFailure) {
         // Placeholder
         if (FieldValidator.validUsername(username) && FieldValidator.validPassword(password)) {
             // retrieve user from db
-            return Optional.of(new User(username, password));
+            authDb.signInWithEmailAndPassword(username + DOMAIN, password)
+                .addOnSuccessListener(runnable -> onSuccess.call(new User(username, password)))
+                .addOnFailureListener(runnable -> onFailure.call());
         } else {
-            return Optional.empty();
+            onFailure.call();
         }
     }
 
-    static public Optional<User> registerUserFromCredentials(@NonNull String username, @NonNull String password) {
-        // Placeholder
+    static public void registerUserFromCredentials(@NonNull String username, @NonNull String password,
+                                                   SuccessCallback<User> onSuccess,
+                                                   FailureCallback onFailure) {
         if (FieldValidator.validUsername(username) && FieldValidator.validPassword(password)) {
-            // Add user to db
-            return Optional.of(new User(username, password));
+            authDb.createUserWithEmailAndPassword(username + DOMAIN, password)
+                .addOnSuccessListener(runnable -> onSuccess.call(new User(username, password)))
+                .addOnFailureListener(runnable -> onFailure.call());
         } else {
-            return Optional.empty();
+            onFailure.call();
         }
     }
 
