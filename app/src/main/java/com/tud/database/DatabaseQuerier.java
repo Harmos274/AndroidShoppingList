@@ -2,14 +2,10 @@ package com.tud.database;
 
 import androidx.annotation.NonNull;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.tud.database.models.Item;
 import com.tud.database.models.User;
 
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 class FieldValidator {
@@ -32,15 +28,12 @@ public class DatabaseQuerier {
     }
 
     private static final String DOMAIN = "@shoplist.com";
-
     private static final FirebaseAuth authDb = FirebaseAuth.getInstance();
 
     static public void getUserFromCredentials(@NonNull String username, @NonNull String password,
                                               SuccessCallback<User> onSuccess,
                                               FailureCallback onFailure) {
-        // Placeholder
         if (FieldValidator.validUsername(username) && FieldValidator.validPassword(password)) {
-            // retrieve user from db
             authDb.signInWithEmailAndPassword(username + DOMAIN, password)
                 .addOnSuccessListener(runnable -> onSuccess.call(new User(username, password)))
                 .addOnFailureListener(runnable -> onFailure.call());
@@ -61,16 +54,7 @@ public class DatabaseQuerier {
         }
     }
 
-    static public Optional<Item[]> getShoplistItemsFromUserId(int user_id) {
-        // Placeholder
-        if (user_id != 0) {
-            return Optional.of(new Item[]{new Item(1, "Tomatoes", 3.5)});
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    static public Optional<Item> createNewItem(String name, double price) {
-        return Optional.of(new Item(ThreadLocalRandom.current().nextInt(0, 10000 + 1), name, price));
+    static public Item createNewItem(String name, double price) {
+        return new Item(ThreadLocalRandom.current().nextInt(0, 10000 + 1), name, price);
     }
 }

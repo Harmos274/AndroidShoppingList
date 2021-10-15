@@ -17,7 +17,8 @@ import java.util.Optional;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    final private static String invalidRegisterMessage = "Invalid username or password.";
+    final private static String invalidRegisterMessage = "Invalid username or password, this account may already " +
+        "exists.";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

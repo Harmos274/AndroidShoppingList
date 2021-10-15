@@ -41,8 +41,8 @@ public class CheckoutActivity extends AppCompatActivity {
 
         // Check only if all the EditTexts are full
         if (creditCardExpirationMonth.length() == 5
-                && creditCardCVC.length() == 3
-                && creditCardNumber.length() == 21) {
+            && creditCardCVC.length() == 3
+            && creditCardNumber.length() == 21) {
             Toast.makeText(context, "Payment validated.", Toast.LENGTH_SHORT).show();
             setResult(ListActivity.CLEAR_LIST);
             this.finish();

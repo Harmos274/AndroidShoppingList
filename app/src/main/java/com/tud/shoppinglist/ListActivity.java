@@ -27,14 +27,20 @@ import com.tud.database.DatabaseQuerier;
 import com.tud.database.models.Item;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public class ListActivity extends AppCompatActivity {
     ListView shoppingListView;
     ItemListAdapter itemListAdapter;
     List<Item> items = new ArrayList<>();
+    ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == CLEAR_LIST) {
+                ListActivity.this.items.clear();
+                ListActivity.this.itemListAdapter.notifyDataSetChanged();
+            }
+        });
 
     public static int CLEAR_LIST = 123;
     public static String TOTAL_BASKET = "TOTAL_BASKET";
@@ -49,22 +55,9 @@ public class ListActivity extends AppCompatActivity {
         setTitle(username + "'s basket");
 
         this.shoppingListView = findViewById(R.id.shoppingList);
-        Optional<Item[]> items = DatabaseQuerier.getShoplistItemsFromUserId(1);
-
-        items.ifPresent(value -> this.items = new ArrayList<>(Arrays.asList(value)));
         this.itemListAdapter = new ItemListAdapter(this.items);
         this.shoppingListView.setAdapter(this.itemListAdapter);
     }
-
-    ActivityResultLauncher<Intent> activityResultLaunch = registerForActivityResult(
-        new ActivityResultContracts.StartActivityForResult(),
-        result -> {
-            if (result.getResultCode() == CLEAR_LIST) {
-                // Clear list in DB
-                ListActivity.this.items.clear();
-                ListActivity.this.itemListAdapter.notifyDataSetChanged();
-            }
-        });
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -120,13 +113,10 @@ public class ListActivity extends AppCompatActivity {
                     toast.show();
                 } else {
                     double itemPrice = Double.parseDouble(itemPriceView.getText().toString());
-                    Optional<Item> maybe_item = DatabaseQuerier.createNewItem(itemName, itemPrice);
-                    // Add on DB
+                    Item item = DatabaseQuerier.createNewItem(itemName, itemPrice);
 
-                    if (maybe_item.isPresent()) {
-                        ListActivity.this.items.add(maybe_item.get());
-                        ListActivity.this.itemListAdapter.notifyDataSetChanged();
-                    }
+                    ListActivity.this.items.add(item);
+                    ListActivity.this.itemListAdapter.notifyDataSetChanged();
                 }
             }).create();
 
@@ -134,7 +124,6 @@ public class ListActivity extends AppCompatActivity {
     }
 
     public void deleteItem(View view) {
-        // Delete on DB
         // Need to go to the button's parent to get the hidden id TextView
         TextView itemId = ((View) view.getParent()).findViewById(R.id.itemId);
 
