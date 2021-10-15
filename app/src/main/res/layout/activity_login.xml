@@ -47,7 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.525"
-        android:autofillHints="@string/usernameLabel"
+        android:autofillHints="username"
         android:inputType="textPersonName" />
 
     <EditText
@@ -62,7 +62,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.653"
-        android:autofillHints="@string/passwordLabel" />
+        android:autofillHints="password" />
 
     <ImageView
         android:id="@+id/appLogo"
