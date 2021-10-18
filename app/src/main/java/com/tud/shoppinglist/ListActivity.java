@@ -106,9 +106,9 @@ public class ListActivity extends AppCompatActivity {
                 String itemPriceString = itemPriceView.getText().toString();
                 String itemName = itemNameView.getText().toString().trim();
 
-                if (itemPriceString.isEmpty() || itemName.isEmpty()) {
+                if (itemPriceString.isEmpty() || itemName.isEmpty() || this.items.stream().anyMatch(l -> l.getName().equals(itemName))) {
                     Context context = getApplicationContext();
-                    Toast toast = Toast.makeText(context, "Invalid name or price.", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(context, "Invalid name or price. Your item could already be in the list.", Toast.LENGTH_SHORT);
 
                     toast.show();
                 } else {
